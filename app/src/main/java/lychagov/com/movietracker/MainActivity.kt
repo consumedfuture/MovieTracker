@@ -39,7 +39,6 @@ class MainActivity : AppCompatActivity() {
         loadFilms(httpClient) {films ->
             runOnUiThread {
                 filmsList.addAll(films)
-                Log.v("films", films.toString())
                 filmsAdapter.notifyDataSetChanged()
             }
         }
@@ -61,13 +60,12 @@ fun loadFilms(
                 .url("https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=b7c5b3c41053880dab8271e0fa4864da&language=ru")
                 .build()
         val response = httpClient.newCall(request).execute()
-        Log.v("films", response.body().toString())
-        val obj : JsonObject = JsonParser().parse(response.body().toString()).getAsJsonObject()
-        val text = obj.get("result").asString ?: "[]"
+        val obj = JsonParser().parse(response.body()?.string())
+        val text = obj.asJsonObject.get("results") ?: JsonObject()
         val films: TMDBFilms = Gson().fromJson(text,TMDBFilms::class.java)
 
         onComplete(films)
-    }
+    }.start()
 }
 
 class FilmsListAdapter(
