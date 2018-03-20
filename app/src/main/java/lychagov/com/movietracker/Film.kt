@@ -8,7 +8,9 @@ package lychagov.com.movietracker
 data class FilmInfo(
         val id: Int,
         val title : String,
-        val poster_path : String
+        val original_title: String,
+        val poster_path : String,
+        val release_date: String
 )
 
 data class FilmDetails(

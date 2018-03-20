@@ -12,6 +12,7 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import org.jetbrains.anko.dip
 import org.jetbrains.anko.wrapContent
 
 /**
@@ -23,7 +24,7 @@ class FilmView(context: Context) : View(context) {
     private var title : String = ""
 
     private val titlePaint = TextPaint().apply{
-        textSize = 72f
+        textSize = dip(20).toFloat()
         color = Color.WHITE
         textAlign = Paint.Align.LEFT
     }
@@ -32,27 +33,32 @@ class FilmView(context: Context) : View(context) {
     override fun onDraw(canvas: Canvas?) {
         if (canvas == null) return
         //val bounds = Rect()
-        val posterWidth = poster?.width ?: dpToPx(120, context)
-        val textWidth = canvas.width-posterWidth- dpToPx(20,context)
+        val posterWidth = dpToPx(80, context)
+        val textWidth = canvas.width - posterWidth - dpToPx(20,context)
         val textLayout = StaticLayout(title,titlePaint, textWidth, Layout.Alignment.ALIGN_NORMAL,1.0f,1.0f,false)
 
         canvas.drawColor(Color.LTGRAY)
-        if (poster != null)
-            canvas.drawBitmap(poster,0f,0f, posterPaint)
-        canvas.drawLine(0f,0f,canvas.width.toFloat(),0f,posterPaint)
-        canvas.drawLine(dpToPx(120,context).toFloat(),0f,dpToPx(120,context).toFloat(),canvas.height.toFloat(),posterPaint)
+
+
+
+        //canvas.drawLine(0f,0f,canvas.width.toFloat(),0f,posterPaint)
+        //canvas.drawLine(dpToPx(80,context).toFloat(),0f,dpToPx(80,context).toFloat(),canvas.height.toFloat(),posterPaint)
+
+        if (poster != null) {
+            canvas.drawBitmap(poster,0f,0f,posterPaint)
+            //canvas.drawBitmap(poster, (canvas.width-poster.width)/2f, (canvas.width-poster.width)/2f, posterPaint)
+        }
         val x = posterWidth.toFloat() + dpToPx(10,context)
         val y = (canvas.height-textLayout.height)/2f
         canvas.save()
         canvas.translate(x,y)
         textLayout.draw(canvas)
         canvas.restore()
-        //canvas.drawText(title, dpToPx(100,context).toFloat(), canvas.height/2.toFloat(),titlePaint)
-        //Log.v("title", title)
+
     }
 
     fun bind(film: FilmInfo) {
-        title = film.title
+        title = film.title + " (" + film.release_date.substring(0,4) + ")"
         poster = null
         invalidate()
         val baseUrl = "https://image.tmdb.org/t/p/w500"
@@ -71,7 +77,8 @@ class FilmView(context: Context) : View(context) {
                         return true
                     }
                 })
-                .submit(dpToPx(120,context), dpToPx(200,context))
+                //.submit(dpToPx(80,context), dpToPx(200,context))
+                .submit(dpToPx(80,context),0)
         Log.v("text", poster.toString())
     }
 }

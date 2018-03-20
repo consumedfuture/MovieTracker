@@ -77,7 +77,7 @@ class FilmActivityUI(
         verticalLayout {
             val name = textView().apply {
                 text = film.title
-                textSize = 80f
+                textSize = dip(14).toFloat()
                 textAlignment = TextView.TEXT_ALIGNMENT_CENTER
                 typeface = Typeface.DEFAULT_BOLD
             }

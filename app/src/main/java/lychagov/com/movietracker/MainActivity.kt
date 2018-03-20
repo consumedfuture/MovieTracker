@@ -3,6 +3,7 @@ package lychagov.com.movietracker
 import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.widget.EditText
@@ -27,6 +28,7 @@ class MainActivity : AppCompatActivity() {
         val filmsView = RecyclerView(this).apply {
             layoutManager = LinearLayoutManager(context)
             adapter = FilmsAdapter(films)
+            addItemDecoration(DividerItemDecoration(context,LinearLayout.VERTICAL))
         }
         val searchFilm = EditText(this).apply {
             hint = "films, series, ..."
@@ -47,8 +49,10 @@ class MainActivity : AppCompatActivity() {
                     }).start()
                 }
                 else{
-                    films.clear()
-                    filmsView.adapter.notifyDataSetChanged()
+                    runOnUiThread {
+                        films.clear()
+                        filmsView.adapter.notifyDataSetChanged()
+                    }
                 }
             }
         }
