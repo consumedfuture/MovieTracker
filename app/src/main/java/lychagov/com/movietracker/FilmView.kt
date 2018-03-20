@@ -32,14 +32,16 @@ class FilmView(context: Context) : View(context) {
     override fun onDraw(canvas: Canvas?) {
         if (canvas == null) return
         //val bounds = Rect()
-        val posterWidth = poster?.width ?: 100
-        val textWidth = canvas.width-posterWidth- dpToPx(16,context)
+        val posterWidth = poster?.width ?: dpToPx(120, context)
+        val textWidth = canvas.width-posterWidth- dpToPx(20,context)
         val textLayout = StaticLayout(title,titlePaint, textWidth, Layout.Alignment.ALIGN_NORMAL,1.0f,1.0f,false)
 
         canvas.drawColor(Color.LTGRAY)
         if (poster != null)
             canvas.drawBitmap(poster,0f,0f, posterPaint)
-        val x = (canvas.width-posterWidth - textWidth)/2f
+        canvas.drawLine(0f,0f,canvas.width.toFloat(),0f,posterPaint)
+        canvas.drawLine(dpToPx(120,context).toFloat(),0f,dpToPx(120,context).toFloat(),canvas.height.toFloat(),posterPaint)
+        val x = posterWidth.toFloat() + dpToPx(10,context)
         val y = (canvas.height-textLayout.height)/2f
         canvas.save()
         canvas.translate(x,y)
@@ -69,7 +71,7 @@ class FilmView(context: Context) : View(context) {
                         return true
                     }
                 })
-                .submit(100, dpToPx(100,context))
+                .submit(dpToPx(120,context), dpToPx(200,context))
         Log.v("text", poster.toString())
     }
 }
