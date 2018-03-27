@@ -4,17 +4,21 @@ import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.Deferred
+import kotlinx.coroutines.experimental.async
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.net.URLEncoder
+import kotlin.coroutines.experimental.CoroutineContext
 
 /**
  * Created by LychagovAN on 19.03.2018.
  */
 
-fun loadFilms(
+fun loadFilmsAsync(coroutineContext: CoroutineContext=CommonPool,
         title: String
-): Films{
+): Deferred<Films> = async(coroutineContext){
     val httpClient = OkHttpClient()
 
     val request = Request.Builder()
@@ -23,7 +27,7 @@ fun loadFilms(
             .build()
     val response = httpClient.newCall(request).execute()
     val obj = JsonParser().parse(response.body()?.string())
-    val text = obj.asJsonObject.get("results") ?: JsonObject()
-    val films: Films = Gson().fromJson(text,Films::class.java)
-    return films
+    val text = obj.asJsonObject.get("results") ?: null
+    val films: Films = Gson().fromJson(text,Films::class.java) ?: Films()
+    films
 }

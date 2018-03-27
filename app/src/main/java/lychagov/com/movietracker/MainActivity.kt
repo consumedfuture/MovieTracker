@@ -9,9 +9,13 @@ import android.support.v7.widget.RecyclerView
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.LinearLayout
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.newSingleThreadContext
 import org.jetbrains.anko.backgroundColor
+import kotlinx.coroutines.experimental.android.UI
 import org.jetbrains.anko.*
-import org.jetbrains.anko.sdk25.coroutines.onClick
+import org.jetbrains.anko.custom.async
 import org.jetbrains.anko.sdk25.coroutines.textChangedListener
 
 
@@ -36,17 +40,19 @@ class MainActivity : AppCompatActivity() {
             padding = dip(10)
 
         }
+        var filmsJob: Job? = null
         searchFilm.textChangedListener {
+            //var filmsJob: Job? = null
             this.afterTextChanged {
+                filmsJob?.cancel()
                 if (it?.isBlank() == false) {
-                    Thread({
-                        val TMDBFilms = loadFilms(searchFilm.text.toString())
-                        films.clear()
-                        films.addAll(TMDBFilms)
-                        runOnUiThread {
-                            filmsView.adapter.notifyDataSetChanged()
-                        }
-                    }).start()
+                   filmsJob = launch(UI) {
+                        val asyncContext = newSingleThreadContext("loading_films")
+                        val job = loadFilmsAsync(asyncContext, searchFilm.text.toString())
+                        job.start()
+                        films.addAll(job.await())
+                        filmsView.adapter.notifyDataSetChanged()
+                    }
                 }
                 else{
                     runOnUiThread {
