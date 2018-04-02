@@ -40,28 +40,27 @@ class MainActivity : AppCompatActivity() {
             padding = dip(10)
 
         }
-        var filmsJob: Job? = null
+
         searchFilm.textChangedListener {
-            //var filmsJob: Job? = null
+            var filmsJob: Job? = null
             this.afterTextChanged {
                 filmsJob?.cancel()
+                films.clear()
                 if (it?.isBlank() == false) {
                    filmsJob = launch(UI) {
                         val asyncContext = newSingleThreadContext("loading_films")
                         val job = loadFilmsAsync(asyncContext, searchFilm.text.toString())
-                        job.start()
                         films.addAll(job.await())
-                        filmsView.adapter.notifyDataSetChanged()
                     }
+                    filmsJob?.join()
+                    filmsView.adapter.notifyDataSetChanged()
                 }
                 else{
-                    runOnUiThread {
-                        films.clear()
-                        filmsView.adapter.notifyDataSetChanged()
-                    }
+                    filmsView.adapter.notifyDataSetChanged()
                 }
             }
         }
+
 
         linearLayout.addView(searchFilm)
         linearLayout.addView(filmsView)

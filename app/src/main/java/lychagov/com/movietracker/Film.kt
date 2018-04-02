@@ -10,7 +10,7 @@ data class FilmInfo(
         val title : String,
         val original_title: String,
         val poster_path : String,
-        val release_date: String
+        val release_date: String? = null
 )
 
 data class FilmDetails(
@@ -18,7 +18,7 @@ data class FilmDetails(
         val title: String,
         val overview: String,
         val poster_path: String,
-        val release_date: String,
+        val release_date: String? = null,
         val runtime: Int,
         val tagline: String
 )

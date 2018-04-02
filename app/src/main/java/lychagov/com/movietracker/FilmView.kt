@@ -58,7 +58,13 @@ class FilmView(context: Context) : View(context) {
     }
 
     fun bind(film: FilmInfo) {
-        title = film.title + " (" + film.release_date.substring(0,4) + ")"
+        var releaseDate = ""
+        try {
+            releaseDate = film.release_date!!.substring(0, 4)
+        } catch (e: Exception){
+            Log.e("str", film.release_date)
+        }
+        title = film.title + " (" + releaseDate + ")"
         poster = null
         invalidate()
         val baseUrl = "https://image.tmdb.org/t/p/w500"
