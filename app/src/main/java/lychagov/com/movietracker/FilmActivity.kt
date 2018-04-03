@@ -1,41 +1,25 @@
 package lychagov.com.movietracker
 
-import android.graphics.Color
 import android.graphics.Typeface
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.util.Log
-import android.view.Gravity
-import android.view.View
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
 import com.bumptech.glide.Glide
-import com.google.gson.Gson
-import com.google.gson.JsonObject
-import com.google.gson.JsonParser
-import okhttp3.OkHttpClient
-import okhttp3.Request
+import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.*
-import org.jetbrains.anko.sdk25.coroutines.onClick
-import java.net.URLEncoder
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.newSingleThreadContext
 
 class FilmActivity : AppCompatActivity() {
     private var selectedFilm: Int = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         selectedFilm = intent.getIntExtra("film_id",0)
-        Thread({
-            val filmDetails = loadFilmDetails(selectedFilm)
-            runOnUiThread {
-                val film = filmDetails
-                FilmActivityUI(film).setContentView(this)
-            }
-        }).start()
+        launch(UI){
+            val film_context = newSingleThreadContext("film_context")
+            val filmDetails = loadFilmDetails(selectedFilm,film_context).await()
+            FilmActivityUI(filmDetails).setContentView(this@FilmActivity)
+        }
 
         /*val filmPicture = ImageView(this)
 
@@ -73,24 +57,45 @@ class FilmActivityUI(
         filmDetails: FilmDetails
 ): AnkoComponent<FilmActivity> {
     val film = filmDetails
-       override fun createView(ui: AnkoContext<FilmActivity>) = with(ui) {
-        verticalLayout {
-            val name = textView().apply {
-                text = film.title
-                textSize = dip(14).toFloat()
-                textAlignment = TextView.TEXT_ALIGNMENT_CENTER
-                typeface = Typeface.DEFAULT_BOLD
+    override fun createView(ui: AnkoContext<FilmActivity>) = with(ui) {
+        scrollView {
+            verticalLayout {
+                textView().apply {
+                    text = film.title
+                    textSize = dip(14).toFloat()
+                    textAlignment = TextView.TEXT_ALIGNMENT_CENTER
+                    typeface = Typeface.DEFAULT_BOLD
+                }
+                textView().apply {
+                    text = film.original_title
+                    textSize = dip(8).toFloat()
+                    textAlignment = TextView.TEXT_ALIGNMENT_CENTER
+                    typeface = Typeface.defaultFromStyle(Typeface.ITALIC)
+                }
+                textView().apply {
+                    text = film.release_date?.substring(0, 4) ?: ""
+                    textSize = dip(10).toFloat()
+                    textAlignment = TextView.TEXT_ALIGNMENT_CENTER
+                    typeface = Typeface.DEFAULT_BOLD
+                }
+                val img = imageView().apply {
+                    setPadding(dip(50), 0, dip(50), 0)
+                }
+                Glide.with(this)
+                        .load("https://image.tmdb.org/t/p/w500${film.poster_path}")
+                        .into(img)
+                val overview = textView().apply {
+                    text = film.overview
+                    textSize = dip(8).toFloat()
+                    textAlignment = TextView.TEXT_ALIGNMENT_CENTER
+                    typeface = Typeface.DEFAULT
+                }
+                /*button("Say Hello") {
+               onClick { ctx.toast("Hello, ${name.text}!") }
+           }*/
+            }.lparams{
+                padding = dip(20)
             }
-            val img = imageView().apply {
-                setPadding(dip(20),0,dip(20),0)
-            }
-            Glide.with(this)
-                    .load("https://image.tmdb.org/t/p/w500${film.poster_path}")
-                    .into(img)
-
-            /*button("Say Hello") {
-                onClick { ctx.toast("Hello, ${name.text}!") }
-            }*/
         }
     }
 }

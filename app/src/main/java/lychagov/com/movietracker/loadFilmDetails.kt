@@ -3,17 +3,23 @@ package lychagov.com.movietracker
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.Deferred
+import kotlinx.coroutines.experimental.async
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import org.jetbrains.anko.doAsyncResult
 import java.net.URLEncoder
+import kotlin.coroutines.experimental.CoroutineContext
 
 /**
  * Created by LychagovAN on 20.03.2018.
  */
 
 fun loadFilmDetails(
-        id: Int
-): FilmDetails {
+        id: Int,
+        coroutineContext: CoroutineContext = CommonPool
+): Deferred<FilmDetails> = async(coroutineContext){
     val httpClient = OkHttpClient()
 
     val request = Request.Builder()
@@ -23,5 +29,6 @@ fun loadFilmDetails(
     val response = httpClient.newCall(request).execute()
     val text = response.body()?.string() ?: "{}"
     val details: FilmDetails = Gson().fromJson(text,FilmDetails::class.java)
-    return details
+
+    details
 }
