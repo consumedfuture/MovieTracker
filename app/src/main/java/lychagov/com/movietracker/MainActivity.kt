@@ -65,50 +65,5 @@ class MainActivity : AppCompatActivity() {
         linearLayout.addView(searchFilm)
         linearLayout.addView(filmsView)
         setContentView(linearLayout)
-        //setContentView(filmsView)
-        /*Thread({
-            val TMDBFilms = loadFilms()
-            films.addAll(TMDBFilms)
-            runOnUiThread {
-                filmsView.adapter.notifyDataSetChanged()
-            }
-        }).start()*/
-       /* Thread({
-
-        }).start()*/
-        /*frameLayout {
-                backgroundColor = Color.GRAY
-                val editText = editText {
-                    hint = "films, series, ..."
-                }.lparams(width = matchParent) {
-                    height = dip(50)
-                    padding = dip(10)
-
-                }
-                filmsView.lparams{
-                    topMargin = dip(50)
-                }
-
-            editText.textChangedListener {
-                afterTextChanged {
-                    //Log.v("films", it?.toString())
-                    if (it?.isBlank() == false) {
-                        Thread({
-                            val TMDBFilms = loadFilms(editText.text.toString())
-                            films.clear()
-                            films.addAll(TMDBFilms)
-                            runOnUiThread {
-                                filmsView.adapter.notifyDataSetChanged()
-                            }
-                        }).start()
-                    }
-                    else{
-                        films.clear()
-                        filmsView.adapter.notifyDataSetChanged()
-                    }
-
-                }
-            }
-        }*/
     }
 }

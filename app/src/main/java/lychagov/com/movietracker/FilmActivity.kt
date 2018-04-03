@@ -53,6 +53,7 @@ class FilmActivity : AppCompatActivity() {
         }*/
     }
 }
+
 class FilmActivityUI(
         filmDetails: FilmDetails
 ): AnkoComponent<FilmActivity> {
