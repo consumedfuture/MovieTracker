@@ -31,3 +31,10 @@ fun loadFilmsAsync(coroutineContext: CoroutineContext=CommonPool,
     val films: Films = Gson().fromJson(text,Films::class.java) ?: Films()
     films
 }
+
+fun loadLocalFilms(
+        app: App,
+        coroutineContext: CoroutineContext = CommonPool
+): Deferred<List<FilmInfo>> = async(coroutineContext){
+    app.database.filmsDao().getAll()
+}

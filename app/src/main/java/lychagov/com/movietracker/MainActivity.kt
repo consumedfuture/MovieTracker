@@ -1,5 +1,7 @@
 package lychagov.com.movietracker
 
+import android.app.Activity
+import android.content.Intent
 import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -16,6 +18,8 @@ import org.jetbrains.anko.backgroundColor
 import kotlinx.coroutines.experimental.android.UI
 import org.jetbrains.anko.*
 import org.jetbrains.anko.custom.async
+import org.jetbrains.anko.sdk25.coroutines.onClick
+import org.jetbrains.anko.sdk25.coroutines.onLongClick
 import org.jetbrains.anko.sdk25.coroutines.textChangedListener
 
 

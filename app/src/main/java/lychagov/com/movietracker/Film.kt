@@ -1,11 +1,15 @@
 package lychagov.com.movietracker
 
+import android.arch.persistence.room.Entity
+import android.arch.persistence.room.PrimaryKey
+
 
 /**
  * Created by LychagovAN on 19.03.2018.
  */
-
+@Entity
 data class FilmInfo(
+        @PrimaryKey
         val id: Int,
         val title : String,
         val original_title: String,

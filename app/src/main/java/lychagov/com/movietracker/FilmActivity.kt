@@ -61,31 +61,31 @@ class FilmActivityUI(
     override fun createView(ui: AnkoContext<FilmActivity>) = with(ui) {
         scrollView {
             verticalLayout {
-                textView().apply {
+                textView {
                     text = film.title
                     textSize = dip(14).toFloat()
                     textAlignment = TextView.TEXT_ALIGNMENT_CENTER
                     typeface = Typeface.DEFAULT_BOLD
                 }
-                textView().apply {
+                textView {
                     text = film.original_title
                     textSize = dip(8).toFloat()
                     textAlignment = TextView.TEXT_ALIGNMENT_CENTER
                     typeface = Typeface.defaultFromStyle(Typeface.ITALIC)
                 }
-                textView().apply {
+                textView {
                     text = film.release_date?.substring(0, 4) ?: ""
                     textSize = dip(10).toFloat()
                     textAlignment = TextView.TEXT_ALIGNMENT_CENTER
                     typeface = Typeface.DEFAULT_BOLD
                 }
-                val img = imageView().apply {
+                val img = imageView {
                     setPadding(dip(50), 0, dip(50), 0)
                 }
                 Glide.with(this)
                         .load("https://image.tmdb.org/t/p/w500${film.poster_path}")
                         .into(img)
-                val overview = textView().apply {
+                val overview = textView {
                     text = film.overview
                     textSize = dip(8).toFloat()
                     textAlignment = TextView.TEXT_ALIGNMENT_CENTER
