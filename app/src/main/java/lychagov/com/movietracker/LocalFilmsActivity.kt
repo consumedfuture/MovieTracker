@@ -20,6 +20,7 @@ import org.jetbrains.anko.design.*
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.sdk25.coroutines.onFocusChange
 import org.jetbrains.anko.sdk25.coroutines.onItemLongClick
+import android.graphics.drawable.VectorDrawable
 
 class LocalFilmsActivity : AppCompatActivity(){
     val PICK_FILM = 100
@@ -76,7 +77,7 @@ class LocalFilmsActivity : AppCompatActivity(){
 }
 
 class LocalFilmsAdapter(
-        var filmList: Films
+        private var filmList: Films
 ): BaseAdapter(){
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         return with(parent!!.context){
@@ -86,20 +87,40 @@ class LocalFilmsAdapter(
 
                 val img = imageView {
                     setPadding(dip(5), 0, dip(5), 0)
+                }.lparams {
+                    width=(parent.width * 0.20).toInt()
+                    gravity = Gravity.CENTER
                 }
                 Glide.with(this)
                         .load("https://image.tmdb.org/t/p/w500${filmList[position].poster_path}")
                         .into(img)
 
+
                 textView {
-                    text = filmList[position].title
-                    textSize = 32f
+                    text = filmList[position].title + " (${filmList[position].release_date?.substring(0,4)})"
+                    textSize = 20f
                     typeface = Typeface.DEFAULT
                     padding = dip(5)
                     //gravity = Gravity.CENTER_VERTICAL and Gravity.START
                 }.lparams {
                     gravity = Gravity.CENTER_VERTICAL
+                    width = (parent.width * 0.60).toInt()
                 }
+
+                val status = imageView {
+                    if (filmList[position].user_mark > 0)
+                        imageResource = R.drawable.ic_done_black
+                    else
+                        imageResource = R.drawable.ic_playlist_play_black
+
+                }.lparams {
+                    width = (parent.width * 0.20).toInt()
+                    gravity = Gravity.CENTER
+                }
+
+//                Glide.with(this)
+//                        .load(openFileInput("@drawable/"))
+
             }
         }
     }
@@ -118,6 +139,14 @@ class LocalFilmsAdapter(
 
     fun add(film: FilmInfo){
         filmList.add(film)
+        notifyDataSetChanged()
+    }
+
+    fun swapMark(position: Int){
+        if (filmList[position].user_mark == 0)
+            filmList[position].user_mark = 1
+        else
+            filmList[position].user_mark = 0
         notifyDataSetChanged()
     }
 
@@ -162,17 +191,24 @@ class LocalFilmsActivityUI(
                             showHideHintListView(filmList)
                     }
                     onItemLongClick { adapterView, view, i, l ->
-                        val options = listOf("Watched", "Not watched", "Delete")
+                        val film = filmAdapter.getItem(i)
+                        var options: List<String>? = null
+                        if (film.user_mark == 0)
+                            options = listOf("Watched", "Delete")
+                        else
+                            options = listOf("Not watched", "Delete")
+
                         selector("Film options", options) { DialogInterface, j ->
-                            if (j == 2) {
-                                val film = filmAdapter.getItem(i)
+                            if (j == 1) {
                                 filmAdapter.remove(i)
                                 saveFilms(ui.owner.application as App, filmAdapter.getAll())
                                 showHideHintListView(filmList)
                                 toast("Film ${film.title} has been deleted.")
                             }
                             else {
-                                toast("Task ${filmAdapter.getItem(i).toString()} has been marked as \"${options[j]}\"")
+                                filmAdapter.swapMark(i)
+                                saveFilms(ui.owner.application as App, filmAdapter.getAll())
+                                toast("Task ${film.title} has been marked as \"${options[j]}\"")
                             }
                         }
                         true
