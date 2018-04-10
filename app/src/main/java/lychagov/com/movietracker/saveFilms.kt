@@ -13,3 +13,27 @@ fun saveFilms(
 ): Deferred<Unit> = async(coroutineContext) {
     app.database.filmsDao().insertAll(films)
 }
+
+fun addFilm(
+        app: App,
+        film: FilmInfo,
+        coroutineContext: CoroutineContext = CommonPool
+): Deferred<Unit> = async(coroutineContext) {
+    app.database.filmsDao().insertFilm(film)
+}
+
+fun updateFilm(
+        app: App,
+        film: FilmInfo,
+        coroutineContext: CoroutineContext = CommonPool
+): Deferred<Unit> = async(coroutineContext) {
+    app.database.filmsDao().update(film)
+}
+
+fun deleteFilm(
+        app: App,
+        film: FilmInfo,
+        coroutineContext: CoroutineContext = CommonPool
+): Deferred<Unit> = async(coroutineContext) {
+    app.database.filmsDao().deleteFilm(film)
+}

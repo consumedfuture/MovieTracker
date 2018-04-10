@@ -18,6 +18,7 @@ data class FilmInfo(
         var user_mark: Int = 0
 )
 
+
 data class FilmDetails(
         val adult: Boolean,
         val title: String,

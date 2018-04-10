@@ -1,8 +1,7 @@
 package lychagov.com.movietracker
 
-import android.arch.persistence.room.Dao
-import android.arch.persistence.room.Insert
-import android.arch.persistence.room.Query
+import android.arch.persistence.room.*
+import android.arch.persistence.room.OnConflictStrategy.REPLACE
 
 @Dao
 interface FilmsDao {
@@ -11,4 +10,13 @@ interface FilmsDao {
 
     @Insert
     fun insertAll(films: List<FilmInfo>)
+
+    @Insert
+    fun insertFilm(film: FilmInfo)
+
+    @Delete
+    fun deleteFilm(film: FilmInfo)
+
+    @Update(onConflict = REPLACE)
+    fun update(film: FilmInfo)
 }

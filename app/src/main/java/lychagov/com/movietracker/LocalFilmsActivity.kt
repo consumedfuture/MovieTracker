@@ -67,7 +67,7 @@ class LocalFilmsActivity : AppCompatActivity(){
             //filmList.add(film)
             launch(UI) {
                 val filmInfo = loadFilmInfo(film).await()
-                saveFilms(application as App, adapter.getAll())
+                addFilm(application as App, filmInfo)
                 adapter.add(filmInfo)
                 //toast("film ${film} added")
             }
@@ -79,6 +79,13 @@ class LocalFilmsActivity : AppCompatActivity(){
 class LocalFilmsAdapter(
         private var filmList: Films
 ): BaseAdapter(){
+
+    fun selector(f: FilmInfo): Int = f.user_mark
+
+    override fun notifyDataSetChanged() {
+        filmList.sortBy({selector(it)})
+        super.notifyDataSetChanged()
+    }
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         return with(parent!!.context){
             linearLayout {
@@ -201,13 +208,13 @@ class LocalFilmsActivityUI(
                         selector("Film options", options) { DialogInterface, j ->
                             if (j == 1) {
                                 filmAdapter.remove(i)
-                                saveFilms(ui.owner.application as App, filmAdapter.getAll())
+                                deleteFilm(ui.owner.application as App, film)
                                 showHideHintListView(filmList)
                                 toast("Film ${film.title} has been deleted.")
                             }
                             else {
                                 filmAdapter.swapMark(i)
-                                saveFilms(ui.owner.application as App, filmAdapter.getAll())
+                                updateFilm(ui.owner.application as App, film)
                                 toast("Task ${film.title} has been marked as \"${options[j]}\"")
                             }
                         }
