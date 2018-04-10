@@ -20,7 +20,7 @@ import org.jetbrains.anko.design.*
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.sdk25.coroutines.onFocusChange
 import org.jetbrains.anko.sdk25.coroutines.onItemLongClick
-import android.graphics.drawable.VectorDrawable
+import org.jetbrains.anko.sdk25.coroutines.onItemClick
 
 class LocalFilmsActivity : AppCompatActivity(){
     val PICK_FILM = 100
@@ -33,7 +33,7 @@ class LocalFilmsActivity : AppCompatActivity(){
         Log.v("action: ", "activity local created")
         Log.v("action: ", filmList.toString())
 
-        title = "Сохраненные фильмы"
+        title = "Saved"
         LocalFilmsActivityUI(adapter).setContentView(this)
 
 
@@ -80,10 +80,8 @@ class LocalFilmsAdapter(
         private var filmList: Films
 ): BaseAdapter(){
 
-    fun selector(f: FilmInfo): Int = f.user_mark
-
     override fun notifyDataSetChanged() {
-        filmList.sortBy({selector(it)})
+        filmList.sortWith(compareBy({it.user_mark}, {it.title}))
         super.notifyDataSetChanged()
     }
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
@@ -111,7 +109,7 @@ class LocalFilmsAdapter(
                     //gravity = Gravity.CENTER_VERTICAL and Gravity.START
                 }.lparams {
                     gravity = Gravity.CENTER_VERTICAL
-                    width = (parent.width * 0.60).toInt()
+                    width = (parent.width * 0.70).toInt()
                 }
 
                 val status = imageView {
@@ -121,13 +119,9 @@ class LocalFilmsAdapter(
                         imageResource = R.drawable.ic_playlist_play_black
 
                 }.lparams {
-                    width = (parent.width * 0.20).toInt()
+                    width = (parent.width * 0.10).toInt()
                     gravity = Gravity.CENTER
                 }
-
-//                Glide.with(this)
-//                        .load(openFileInput("@drawable/"))
-
             }
         }
     }
@@ -149,11 +143,11 @@ class LocalFilmsAdapter(
         notifyDataSetChanged()
     }
 
-    fun swapMark(position: Int){
-        if (filmList[position].user_mark == 0)
-            filmList[position].user_mark = 1
-        else
+    fun setMark(position: Int, mark: Int){
+        if (filmList[position].user_mark>0)
             filmList[position].user_mark = 0
+        else
+            filmList[position].user_mark = mark
         notifyDataSetChanged()
     }
 
@@ -197,28 +191,32 @@ class LocalFilmsActivityUI(
                         if (hasFocus)
                             showHideHintListView(filmList)
                     }
-                    onItemLongClick { adapterView, view, i, l ->
+                    onItemClick { adapterView, view, i, l ->
                         val film = filmAdapter.getItem(i)
+                        ui.owner.startActivity<FilmActivity>("film_id" to film.id, "user_mark" to film.user_mark)
+                    }
+
+
+
+                    onItemLongClick(returnValue = true) { _, _, position, _ ->
+                        val film = filmAdapter.getItem(position)
                         var options: List<String>? = null
                         if (film.user_mark == 0)
-                            options = listOf("Watched", "Delete")
+                            options = listOf("Excellent", "Good", "Average", "Bad", "Failing", "Delete")
                         else
                             options = listOf("Not watched", "Delete")
-
-                        selector("Film options", options) { DialogInterface, j ->
-                            if (j == 1) {
-                                filmAdapter.remove(i)
+                        selector("Film options", options) { _, j ->
+                            if (j == options.size - 1) {
+                                filmAdapter.remove(position)
                                 deleteFilm(ui.owner.application as App, film)
                                 showHideHintListView(filmList)
                                 toast("Film ${film.title} has been deleted.")
-                            }
-                            else {
-                                filmAdapter.swapMark(i)
+                            } else {
+                                filmAdapter.setMark(position, options.size - 1 - j)
                                 updateFilm(ui.owner.application as App, film)
-                                toast("Task ${film.title} has been marked as \"${options[j]}\"")
+                                toast("Film ${film.title} has been marked as \"${options[j]}\"")
                             }
                         }
-                        true
                     }
                 }.lparams {
                     margin = dip(5)
@@ -229,7 +227,7 @@ class LocalFilmsActivityUI(
             floatingActionButton {
                 imageResource = android.R.drawable.ic_input_add
                 onClick {
-                    ui.owner.startActivityForResult<MainActivity>(ui.owner.PICK_FILM)
+                    ui.owner.startActivityForResult<SearchActivity>(ui.owner.PICK_FILM)
                 }
             }.lparams {
                 //setting button to bottom right of the screen

@@ -4,10 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.support.v7.widget.RecyclerView
-import android.util.Log
-import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.sdk25.coroutines.onLongClick
@@ -55,11 +52,11 @@ class FilmsAdapter(
         filmView.onLongClick {
             val options = listOf("Add to my films")
             val context = it?.context
-            context!!.selector("Task Options", options) { dialogInterface, j ->
+            context!!.selector("Film Options", options) { dialogInterface, j ->
                 if (j == 0) {
                     val resultIntent = Intent()
                     resultIntent.putExtra("film_id", film.id)
-                    (context as MainActivity).setResult(Activity.RESULT_OK, resultIntent)
+                    (context as SearchActivity).setResult(Activity.RESULT_OK, resultIntent)
                     context.finish()
                 }
             }

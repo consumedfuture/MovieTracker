@@ -18,6 +18,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".FilmActivity"/>
-        <activity android:name=".MainActivity" />
+        <activity android:name=".SearchActivity" />
     </application>
 </manifest>
